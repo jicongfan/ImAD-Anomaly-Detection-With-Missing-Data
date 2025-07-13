@@ -5,7 +5,7 @@
 
 Feng Xiao, Jicong Fan. [Unsupervised Anomaly Detection in The Presence of Missing Values. NeurIPS 2024.](https://proceedings.neurips.cc/paper_files/paper/2024/file/f99f7b22ad47fa6ce151730cf8d17911-Paper-Conference.pdf)
 
-![ImAD Framework](figs/ImAD-flowchart.png)
+![ImAD Framework](figs/ImAD-flowchart.PNG)
 
 
 ## Getting Started
