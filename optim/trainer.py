@@ -121,6 +121,24 @@ class Trainer(BaseTrainer):
                     # loss_writer.add_scalar('%s_%s_normal_recon_loss' % (self.dataset_name, str(self.latent_dimension)), recon_loss.item(), step)
                     loss += recon_loss
 
+
+                    # generated abnormal data ========================================================================================================== #
+                    # imputation loss
+                    negative_samples = target_distribution_sampling(self.batch_size, mid_repre[0].shape, mu=self.mu, std=self.std, r_min=self.r_min, r_max=self.r_max)
+                    negative_samples = negative_samples.to(self.device)
+                    imputed_data, mid_repre_neg, recover_data, masks = net(negative_samples, negative=True, missing_rate=self.missing_rate, mechanism=self.mechanism_pseudo)
+                    masks = masks.to(self.device)
+                    neg_imputed_loss = torch.mean(torch.sum(torch.mul((imputed_data - recover_data), masks) ** 2, dim=tuple(range(1, negative_samples.dim())))) * self.beta
+                    neg_imputed_loss_batch += neg_imputed_loss.item()
+                    loss += neg_imputed_loss.item()
+
+                    # projection loss
+                    neg_dist_loss = torch.mean(torch.sum((mid_repre_neg - negative_samples) ** 2, dim=tuple(range(1, negative_samples.dim())))) * self.alpha
+                    neg_dist_loss_batch += neg_dist_loss.item()
+                    loss += neg_dist_loss.item()
+
+                    # =================================================================================================================================== #
+
                     loss.backward()
                     optimizer.step()
 
